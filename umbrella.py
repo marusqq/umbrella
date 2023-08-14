@@ -6,33 +6,34 @@ from logger import logger
 
 weather_parser = WeatherParser()
 
+logger.info("-" * 50)
+logger.info("SETUP")
+
 logger.info("Reading contacts.json")
 with open("contacts.json", "r") as json_file:
     contacts = json.load(json_file)
 
 logger.info(f"Starting to loop through {len(contacts)} contacts")
 for contact in contacts:
-
     contact_name = contact['name']
-    contact_location = contact['location']
-    latitude = contact_location['latitude']
-    longitude = contact_location['longitude']
+    contact_locations = contact['locations']
     time_wakes_up = contact['wakes_up']
+    contact_settings = contact['settings']
 
-    logger.info(f"Scheduling morning alert for {contact_name} @ {time_wakes_up} in location {latitude}, {longitude}")
-    schedule.every().day.at(time_wakes_up).do(weather_parser.send_morning_alert, latitude, longitude, contact_name)
+    logger.info("Looping through contact's locations")
+    for _, contact_location_address in contact_locations.items():
+        logger.info(f"Schedule notification parsing "
+                    f"on {time_wakes_up} @ {contact_location_address} for {contact_name}")
+        schedule.every().day.at(time_wakes_up).do(
+            weather_parser.send_morning_notifications(
+                contact_location_address,
+                contact_name,
+                contact_settings
+            )
+        )
 
-    # weather_parser.send_morning_alert()
-    # weather_parser.get_weather_forecast(lat, lon)
-    # weather_parser.write_data_to_file()
-    # weather_parser.read_data_from_file()
-
-
+logger.info("-" * 50)
 logger.info("Schedulers set. Waiting for jobs....")
 while True:
     schedule.run_pending()
     time.sleep(1)
-
-
-
-
