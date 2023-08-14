@@ -181,10 +181,10 @@ class WeatherParser:
                                f" Max UV index: {max_uv_index} @ {max_uv_index_time} \n" \
                                f" Wind speed: {wind_speed} m/s \n" \
                                f" Temperature will feel like: \n" \
-                               f" \t - morning: {feels_like_data['morn']}\n " \
-                               f" \t - day: {feels_like_data['day']}\n " \
-                               f" \t - evening: {feels_like_data['eve']}\n " \
-                               f" \t - night: {feels_like_data['night']}\n "
+                               f" \t - morning: {feels_like_data['morn']} C\n " \
+                               f" \t - day: {feels_like_data['day']} C\n " \
+                               f" \t - evening: {feels_like_data['eve']} C\n " \
+                               f" \t - night: {feels_like_data['night']} C\n "
 
         notification = {
             "group": os.getenv("UMBRELLA_GROUP"),
