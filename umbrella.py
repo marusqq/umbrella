@@ -25,11 +25,10 @@ for contact in contacts:
         logger.info(f"Schedule notification parsing "
                     f"on {time_wakes_up} @ {contact_location_address} for {contact_name}")
         schedule.every().day.at(time_wakes_up).do(
-            weather_parser.send_morning_notifications(
-                contact_location_address,
-                contact_name,
-                contact_settings
-            )
+            weather_parser.send_morning_notifications,
+            contact_location_address,
+            contact_name,
+            contact_settings
         )
 
 logger.info("-" * 50)
