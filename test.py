@@ -1,6 +1,4 @@
 import json
-import time
-import schedule
 from Objects.WeatherParser import WeatherParser
 from logger import logger
 
@@ -23,18 +21,17 @@ for contact in contacts:
     logger.info("Looping through contact's locations")
     for _, contact_location_address in contact_locations.items():
 
-        logger.info(f"Schedule weather parsing "
-                    f"on {time_wakes_up} @ {contact_location_address} for {contact_name}")
+        logger.info(f"Run weather parsing "
+                    f"on {'NOW'} @ {contact_location_address} for {contact_name}")
 
-        schedule.every().day.at(time_wakes_up).do(
-            weather_parser.send_morning_notifications,
+        weather_parser.send_morning_notifications(
             contact_location_address,
             contact_name,
             contact_settings
         )
 
-logger.info("-" * 50)
-logger.info("Schedulers set. Waiting for jobs....")
-while True:
-    schedule.run_pending()
-    time.sleep(1)
+# logger.info("-" * 50)
+# logger.info("Schedulers set. Waiting for jobs....")
+# while True:
+#     schedule.run_pending()
+#     time.sleep(1)
