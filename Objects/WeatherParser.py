@@ -189,7 +189,7 @@ class WeatherParser:
         notification = {
             "group": os.getenv("UMBRELLA_GROUP"),
             "message": notification_message,
-            "title": f"Today's weather ({today_dt.strftime('%d-%m')}) @ {address}",
+            "title": f"Today's weather ({today_dt.strftime('%m-%d')}) @ {address}",
             "priority": 0,
         }
 
