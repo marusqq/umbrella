@@ -17,7 +17,7 @@ if not os.path.exists(log_dir):
     os.makedirs(log_dir)
 
 log_file = os.path.join(log_dir, f'log_{datetime.datetime.now().strftime("%Y%m%d_%H%M%S")}.log')
-handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=3)
+handler = RotatingFileHandler(log_file, maxBytes=1000000, backupCount=3, encoding='utf-8')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
 
