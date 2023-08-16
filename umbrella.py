@@ -34,7 +34,13 @@ for contact in contacts:
         )
 
 logger.info("-" * 50)
-logger.info("Schedulers set. Waiting for jobs....")
+logger.info(f"Jobs scheduled ({len(schedule.get_jobs())}): ")
+for job in schedule.get_jobs():
+    logger.info(f"Job: {job}")
+
+
+logger.info("-" * 50)
+logger.info("Begin waiting for jobs")
 while True:
     schedule.run_pending()
     time.sleep(1)

@@ -4,10 +4,11 @@ import requests
 import os
 from dotenv import load_dotenv
 from geopy import Nominatim
+from retrying import retry
+
 from logger import logger
 import json
 import datetime
-
 
 load_dotenv()
 
@@ -43,16 +44,19 @@ class WeatherParser:
 
     # ----- WEATHER methods
     def get_weather_forecast(self, address: str) -> bool:
+        location = self.address_to_latlng(address)
+
+        if not location:
+            fail_str = f"Failed to geolocate latitude and longitude from address {address}"
+            logger.error(fail_str)
+            return False
+
+        latitude = location.latitude
+        longitude = location.longitude
+
         request_url = "https://api.openweathermap.org/data/2.5/onecall"
         max_retries = 3
         retries = 0
-
-        latitude, longitude = self.address_to_latlng(address)
-
-        if latitude is None or longitude is None:
-            logger.info("Received None from address_to_latlng()")
-            logger.info("Returning False from get_weather_forecast()")
-            return False
 
         while retries < max_retries:
             params = {
@@ -237,20 +241,26 @@ class WeatherParser:
         return datetime.datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
 
     @staticmethod
+    @retry(wait_fixed=10000, stop_max_attempt_number=3)  # Retry every 10 seconds, up to 3 times
     def address_to_latlng(address):
         geolocator = Nominatim(user_agent="my_geocoder")
 
         logger.info(f"Geolocating address: {address}")
-        location = geolocator.geocode(address)
+        try:
+            location = geolocator.geocode(address)
 
-        if location:
-            logger.info(f"Geolocated location: {location}")
-            logger.info(f"Latitude: {location.latitude}, Longitude: {location.longitude}")
-            return location.latitude, location.longitude
+            if location:
+                logger.info(f"Geolocated location: {location}")
+                logger.info(f"Latitude: {location.latitude}, Longitude: {location.longitude}")
+                return location
 
-        else:
-            logger.error(f"Failed to geolocate, address used: {address}")
-            return None, None
+            else:
+                logger.error(f"Failed to geolocate, address used: {address}")
+                return None
+
+        except Exception as e:
+            logger.error(f"Failed to geolocate: {e}")
+            return None
 
     # ----- FILE methods
     def write_data_to_file(self):
